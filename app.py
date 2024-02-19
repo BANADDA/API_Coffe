@@ -25,7 +25,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL = tf.keras.models.load_model("savedModels/1/")
+MODEL = tf.keras.models.load_model("savedModels/1/saved_model.pb")
 
 CLASS_NAMES=['miner', 'nodisease', 'phoma', 'rust']
 
