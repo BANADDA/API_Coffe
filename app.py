@@ -1,15 +1,15 @@
 
 
-from fastapi import FastAPI, File, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
-import numpy as np
 from io import BytesIO
-from PIL import Image
+
+import numpy as np
 import pandas as pd
 import tensorflow as tf
+import uvicorn
+from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from PIL import Image
 from tensorflow import keras
-
 
 app = FastAPI()
 
@@ -25,7 +25,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL = tf.keras.models.load_model("savedModels\1")
+MODEL = tf.keras.models.load_model("savedModels/1/")
 
 CLASS_NAMES=['miner', 'nodisease', 'phoma', 'rust']
 
