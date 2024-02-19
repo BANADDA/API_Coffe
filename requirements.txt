@@ -7,3 +7,4 @@ pandas
 tensorflow-serving-api
 matplotlib
 numpy
+pandas
