@@ -46,10 +46,8 @@ async def preprocess_image(image_file):
 async def predict(file: UploadFile = File(...)):
     # Preprocess uploaded image
     image = await preprocess_image(BytesIO(await file.read()))
-    # Expand dimensions to match model input shape
-    img_batch = np.expand_dims(image, 0)
     # Make predictions
-    predictions = MODEL.predict(img_batch)
+    predictions = MODEL.predict(image)
     # Get predicted class and confidence
     predicted_class = CLASS_NAMES[np.argmax(predictions[0])]
     confidence = float(np.max(predictions[0]))
@@ -57,6 +55,7 @@ async def predict(file: UploadFile = File(...)):
         'class': predicted_class,
         'confidence': confidence
     }
+
 
 if __name__ == "__main__":
     # Run the FastAPI app
