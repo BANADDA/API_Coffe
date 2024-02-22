@@ -33,35 +33,19 @@ CLASS_NAMES = ['miner', 'nodisease', 'phoma', 'rust']
 async def ping():
     return "Hello, I am alive"
 
-# def preprocess_image(image_file) -> np.ndarray:
-#     # Open image from file
-#     image = Image.open(image_file)
-#     # Resize image to match model input size
-#     image = image.resize((256, 256))
-#     # Convert image to numpy array
-#     image = np.array(image)
-#     # Normalize pixel values to range [0, 1]
-#     image = image / 255.0
-#     return image
-def preprocess_image(image_file_path):
-    # Open image from file
-    image = Image.open(image_file_path)
-    # Resize image to match model input size
-    image = image.resize((256, 256))
-    # Convert image to numpy array
-    image = np.array(image)
-    # Add a batch dimension
+async def preprocess_image(image_file):
+    image = Image.open(image_file)
+    image = image.convert('RGB')  # Ensure RGB format
+    image = image.resize((256, 256), Image.LANCZOS)
+    image = np.asarray(image)
     image = np.expand_dims(image, axis=0)
-    # Normalize pixel values to range [0, 1]
-    image = image / 255.0
+    print("Shape of preprocessed image:", image.shape)  # Print shape
     return image
 
 @app.post("/predict")
-async def predict(
-    file: UploadFile = File(...)
-):
+async def predict(file: UploadFile = File(...)):
     # Preprocess uploaded image
-    image = preprocess_image(BytesIO(await file.read()))
+    image = await preprocess_image(BytesIO(await file.read()))
     # Expand dimensions to match model input shape
     img_batch = np.expand_dims(image, 0)
     # Make predictions
