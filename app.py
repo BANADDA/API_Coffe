@@ -33,13 +33,25 @@ CLASS_NAMES = ['miner', 'nodisease', 'phoma', 'rust']
 async def ping():
     return "Hello, I am alive"
 
-def preprocess_image(image_file) -> np.ndarray:
+# def preprocess_image(image_file) -> np.ndarray:
+#     # Open image from file
+#     image = Image.open(image_file)
+#     # Resize image to match model input size
+#     image = image.resize((256, 256))
+#     # Convert image to numpy array
+#     image = np.array(image)
+#     # Normalize pixel values to range [0, 1]
+#     image = image / 255.0
+#     return image
+def preprocess_image(image_file_path):
     # Open image from file
-    image = Image.open(image_file)
+    image = Image.open(image_file_path)
     # Resize image to match model input size
     image = image.resize((256, 256))
     # Convert image to numpy array
     image = np.array(image)
+    # Add a batch dimension
+    image = np.expand_dims(image, axis=0)
     # Normalize pixel values to range [0, 1]
     image = image / 255.0
     return image
