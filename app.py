@@ -1,9 +1,6 @@
-
-
 from io import BytesIO
 
 import numpy as np
-import pandas as pd
 import tensorflow as tf
 import uvicorn
 from fastapi import FastAPI, File, UploadFile
@@ -13,6 +10,7 @@ from tensorflow import keras
 
 app = FastAPI()
 
+# CORS middleware configuration
 origins = [
     "http://localhost",
     "http://localhost:8000",
@@ -25,36 +23,45 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Fix bug
+# Load the pre-trained model
 MODEL = tf.keras.models.load_model("./savedModels/1")
 
-CLASS_NAMES=['miner', 'nodisease', 'phoma', 'rust']
+# Define class names
+CLASS_NAMES = ['miner', 'nodisease', 'phoma', 'rust']
 
 @app.get("/ping")
 async def ping():
     return "Hello, I am alive"
 
-def read_file_as_image(data) -> np.ndarray:
-    image = np.array(Image.open(BytesIO(data)))
+def preprocess_image(image_file) -> np.ndarray:
+    # Open image from file
+    image = Image.open(image_file)
+    # Resize image to match model input size
+    image = image.resize((256, 256))
+    # Convert image to numpy array
+    image = np.array(image)
+    # Normalize pixel values to range [0, 1]
+    image = image / 255.0
     return image
 
 @app.post("/predict")
 async def predict(
     file: UploadFile = File(...)
 ):
-    image = read_file_as_image(await file.read())
+    # Preprocess uploaded image
+    image = preprocess_image(BytesIO(await file.read()))
+    # Expand dimensions to match model input shape
     img_batch = np.expand_dims(image, 0)
-    
+    # Make predictions
     predictions = MODEL.predict(img_batch)
-
+    # Get predicted class and confidence
     predicted_class = CLASS_NAMES[np.argmax(predictions[0])]
-    confidence = np.max(predictions[0])
+    confidence = float(np.max(predictions[0]))
     return {
         'class': predicted_class,
-        'confidence': float(confidence)
+        'confidence': confidence
     }
 
 if __name__ == "__main__":
+    # Run the FastAPI app
     uvicorn.run(app, host='localhost', port=8000)
-
-# http://localhost:8000/predict
