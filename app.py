@@ -25,7 +25,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL = tf.keras.models.load_model("savedModels/new_model.h5")
+MODEL = tf.keras.models.load_model("savedModels\1")
 
 CLASS_NAMES=['miner', 'nodisease', 'phoma', 'rust']
 
@@ -54,6 +54,6 @@ async def predict(
     }
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host='localhost', port=8000)
 
 # http://localhost:8000/predict
